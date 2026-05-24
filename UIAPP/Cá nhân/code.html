@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Shopee-Style Mobile Profile</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"outline-variant": "#e5beb6", "error-container": "#ffdad6", "surface-variant": "#fbdcd6", error: "#ba1a1a", "on-secondary-fixed": "#410003", "inverse-primary": "#ffb4a5", "surface-container-highest": "#fbdcd6", "surface-bright": "#fff8f6", "on-tertiary-fixed-variant": "#5d4200", "on-primary": "#ffffff", "surface-container": "#ffe9e5", "secondary-fixed-dim": "#ffb4ac", "on-tertiary-fixed": "#271900", "surface-container-lowest": "#ffffff", "primary-fixed-dim": "#ffb4a5", "surface-dim": "#f2d3cd", tertiary: "#785600", "surface-container-low": "#fff0ee", "on-primary-fixed-variant": "#8e1400", "on-secondary-container": "#fffbff", "on-error": "#ffffff", "primary-container": "#db3416", "on-tertiary-container": "#fffbff", "surface-tint": "#ba1d00", "primary-fixed": "#ffdad3", "inverse-on-surface": "#ffede9", "on-primary-fixed": "#3e0400", "on-primary-container": "#fffbff", "tertiary-fixed-dim": "#ffbb0c", "inverse-surface": "#3f2c28", secondary: "#bb0015", outline: "#906f69", "tertiary-container": "#976d00", "on-background": "#281714", background: "#fff8f6", "secondary-fixed": "#ffdad6", surface: "#fff8f6", "on-tertiary": "#ffffff", "on-surface": "#281714", "on-secondary-fixed-variant": "#93000e", "on-error-container": "#93000a", primary: "#b51c00", "on-secondary": "#ffffff", "surface-container-high": "#ffe2dc", "tertiary-fixed": "#ffdea6", "secondary-container": "#e51d25", "on-surface-variant": "#5c403a"}, borderRadius: {DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px"}, spacing: {xs: "4px", "container-margin": "16px", xl: "32px", md: "16px", sm: "8px", gutter: "12px", base: "4px", lg: "24px"}, fontFamily: {"body-sm": ["Inter"], "title-md": ["Inter"], "headline-lg": ["Inter"], "headline-md": ["Inter"], "display-lg": ["Inter"], "body-md": ["Inter"], "label-md": ["Inter"], "label-lg": ["Inter"], "body-lg": ["Inter"], "label-sm": ["Inter"], "title-lg": ["Inter"], headline: ["Inter"], display: ["Inter"], body: ["Inter"], label: ["Inter"]}, fontSize: {"body-sm": ["12px", {lineHeight: "16px", fontWeight: "400"}], "title-md": ["16px", {lineHeight: "24px", fontWeight: "600"}], "headline-lg": ["24px", {lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "700"}], "headline-md": ["20px", {lineHeight: "28px", fontWeight: "600"}], "display-lg": ["32px", {lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700"}], "body-md": ["14px", {lineHeight: "20px", fontWeight: "400"}], "label-md": ["12px", {lineHeight: "16px", fontWeight: "500"}], "label-lg": ["14px", {lineHeight: "20px", fontWeight: "600"}], "body-lg": ["16px", {lineHeight: "24px", fontWeight: "400"}], "label-sm": ["10px", {lineHeight: "12px", fontWeight: "700"}], "title-lg": ["18px", {lineHeight: "24px", fontWeight: "600"}]}}}};</script>
+<style>
+    body {
+      background-color: #f5f5f5; /* Off-white level 0 base */
+      -webkit-tap-highlight-color: transparent;
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    /* Ambient shadow for level 1 cards */
+    .shadow-level-1 {
+      box-shadow: 0px 4px 12px rgba(40, 23, 20, 0.05);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-on-surface pb-24 md:hidden">
+<!-- Header Section (Level 2) -->
+<header class="bg-primary text-on-primary w-full sticky top-0 z-40 shadow-sm relative overflow-hidden">
+<!-- Subtle gradient background effect -->
+<div class="absolute inset-0 bg-gradient-to-br from-primary-container to-primary opacity-50 z-0"></div>
+<div class="relative z-10">
+<!-- Top Actions -->
+<div class="flex justify-end items-center px-container-margin py-sm gap-4">
+<button aria-label="Settings" class="hover:opacity-80 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[24px]">settings</span>
+</button>
+<button aria-label="Chat" class="hover:opacity-80 active:scale-95 transition-transform relative">
+<span class="material-symbols-outlined text-[24px]">chat</span>
+<span class="absolute -top-1 -right-1 bg-surface text-primary font-label-sm text-label-sm rounded-full h-4 w-4 flex items-center justify-center">3</span>
+</button>
+</div>
+<!-- User Info -->
+<div class="flex items-center px-container-margin pb-lg pt-sm gap-md">
+<div class="relative">
+<img alt="User profile" class="w-[64px] h-[64px] rounded-full object-cover border-2 border-on-primary" data-alt="A professional portrait photograph of a young man, centered in a circular frame, looking directly at the camera. He wears a casual, modern shirt. The lighting is bright and even, highlighting a friendly expression. The background is a soft, blurred studio grey, consistent with a clean, high-end e-commerce profile aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjQnDsLKKeaW_hlr8F50JI8qMmILTJCemg6hW4fHHp_e3IojUGnnqhRPezx2ikzMpOEW_-Vufao5nlyEkK0KnEWoV1tmR62nsX6mdoxWG1Ok0OWNNMKi3W5h62H7NBV0poyskrzRpo3iTV5s_QpGfPVQNpPZFp0P0QbZJdFQF-NgZGBv3SRqE2RNBsyyIIZSldQ3kHZprEtMLOqspqy5QD2qbsQlLqL7q1BlXaSxEbLAJLg6LtH6R7HDFK7jLw5MvIlrgR2Rh0eKc"/>
+</div>
+<div class="flex-1">
+<h1 class="font-headline-md text-headline-md text-on-primary mb-1">Nguyen Van A</h1>
+<div class="inline-flex items-center bg-surface-variant text-on-surface font-label-sm text-label-sm px-2 py-1 rounded-full gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[14px]">stars</span>
+            Thành viên Bạc
+            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+</header>
+<main class="px-md -mt-4 relative z-20 flex flex-col gap-sm">
+<!-- Order Status Section (Level 1 Card) -->
+<section class="bg-surface rounded-lg shadow-level-1 p-0 overflow-hidden">
+<div class="flex justify-between items-center px-md py-sm border-b border-surface-container-high">
+<h2 class="font-title-md text-title-md">Đơn mua</h2>
+<a class="flex items-center text-on-surface-variant font-body-sm text-body-sm hover:opacity-80" href="#">
+          Xem lịch sử mua hàng
+          <span class="material-symbols-outlined text-[16px] ml-1">chevron_right</span>
+</a>
+</div>
+<div class="flex justify-around items-center py-md">
+<!-- Chờ xác nhận -->
+<div class="flex flex-col items-center gap-2 w-1/4 relative active:scale-95 transition-transform">
+<div class="relative">
+<span class="material-symbols-outlined text-[28px] text-on-surface-variant" style="font-variation-settings: 'FILL' 0;">account_balance_wallet</span>
+<span class="absolute -top-2 -right-2 bg-primary text-on-primary font-label-sm text-label-sm rounded-full h-4 w-4 flex items-center justify-center border border-surface">1</span>
+</div>
+<span class="font-body-sm text-body-sm text-center text-on-surface leading-tight">Chờ xác nhận</span>
+</div>
+<!-- Chờ lấy hàng -->
+<div class="flex flex-col items-center gap-2 w-1/4 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[28px] text-on-surface-variant" style="font-variation-settings: 'FILL' 0;">inventory_2</span>
+<span class="font-body-sm text-body-sm text-center text-on-surface leading-tight">Chờ lấy hàng</span>
+</div>
+<!-- Đang giao -->
+<div class="flex flex-col items-center gap-2 w-1/4 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[28px] text-on-surface-variant" style="font-variation-settings: 'FILL' 0;">local_shipping</span>
+<span class="font-body-sm text-body-sm text-center text-on-surface leading-tight">Đang giao</span>
+</div>
+<!-- Đánh giá -->
+<div class="flex flex-col items-center gap-2 w-1/4 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[28px] text-on-surface-variant" style="font-variation-settings: 'FILL' 0;">star_rate</span>
+<span class="font-body-sm text-body-sm text-center text-on-surface leading-tight">Đánh giá</span>
+</div>
+</div>
+</section>
+<!-- Wallet & Utilities (Level 1 Card) -->
+<section class="bg-surface rounded-lg shadow-level-1 overflow-hidden mt-sm">
+<div class="flex justify-between items-center px-md py-sm border-b border-surface-container-high">
+<h2 class="font-title-md text-title-md">Tiện ích của tôi</h2>
+</div>
+<div class="grid grid-cols-4 gap-y-lg py-md">
+<div class="flex flex-col items-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[28px] text-primary" style="font-variation-settings: 'FILL' 1;">confirmation_number</span>
+<span class="font-body-sm text-body-sm text-center text-on-surface leading-tight px-1">Kho Voucher</span>
+</div>
+<div class="flex flex-col items-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[28px] text-[#F5A623]" style="font-variation-settings: 'FILL' 1;">toll</span>
+<span class="font-body-sm text-body-sm text-center text-on-surface leading-tight px-1">Shopee Xu</span>
+</div>
+<div class="flex flex-col items-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[28px] text-on-surface-variant" style="font-variation-settings: 'FILL' 0;">favorite</span>
+<span class="font-body-sm text-body-sm text-center text-on-surface leading-tight px-1">Đã Thích</span>
+</div>
+<div class="flex flex-col items-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[28px] text-on-surface-variant" style="font-variation-settings: 'FILL' 0;">history</span>
+<span class="font-body-sm text-body-sm text-center text-on-surface leading-tight px-1">Đã Xem</span>
+</div>
+</div>
+</section>
+<!-- Menu List (Level 1 Card) -->
+<section class="bg-surface rounded-lg shadow-level-1 overflow-hidden mt-sm mb-lg">
+<ul class="flex flex-col">
+<!-- Item 1 -->
+<li>
+<a class="flex items-center px-md py-4 border-b border-surface-container-high active:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined text-primary mr-sm text-[24px]" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="font-body-md text-body-md flex-1">Thiết lập tài khoản</span>
+<span class="material-symbols-outlined text-on-surface-variant text-[24px]">chevron_right</span>
+</a>
+</li>
+<!-- Item 2 -->
+<li>
+<a class="flex items-center px-md py-4 border-b border-surface-container-high active:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined text-tertiary-fixed-dim mr-sm text-[24px]" style="font-variation-settings: 'FILL' 1;">help</span>
+<span class="font-body-md text-body-md flex-1">Trung tâm trợ giúp</span>
+<span class="material-symbols-outlined text-on-surface-variant text-[24px]">chevron_right</span>
+</a>
+</li>
+<!-- Item 3 -->
+<li>
+<a class="flex items-center px-md py-4 border-b border-surface-container-high active:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined text-secondary mr-sm text-[24px]" style="font-variation-settings: 'FILL' 1;">chat_bubble</span>
+<span class="font-body-md text-body-md flex-1">Trò chuyện với Shopee</span>
+<span class="material-symbols-outlined text-on-surface-variant text-[24px]">chevron_right</span>
+</a>
+</li>
+<!-- Item 4 -->
+<li>
+<a class="flex items-center px-md py-4 active:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined text-on-surface-variant mr-sm text-[24px]" style="font-variation-settings: 'FILL' 1;">info</span>
+<span class="font-body-md text-body-md flex-1">Về Shopee</span>
+<span class="material-symbols-outlined text-on-surface-variant text-[24px]">chevron_right</span>
+</a>
+</li>
+</ul>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 shadow-md border-t border-outline-variant dark:border-outline flex justify-around items-center px-xs py-sm pb-safe bg-surface md:hidden">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline hover:bg-surface-container-low active:scale-90 transition-transform w-1/4 rounded-lg py-1" href="#">
+<span class="material-symbols-outlined text-[24px]">home</span>
+<span class="font-label-md text-label-md mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline hover:bg-surface-container-low active:scale-90 transition-transform w-1/4 rounded-lg py-1" href="#">
+<span class="material-symbols-outlined text-[24px]">grid_view</span>
+<span class="font-label-md text-label-md mt-1">Categories</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline hover:bg-surface-container-low active:scale-90 transition-transform w-1/4 rounded-lg py-1" href="#">
+<span class="material-symbols-outlined text-[24px]">receipt_long</span>
+<span class="font-label-md text-label-md mt-1">Orders</span>
+</a>
+<!-- Active Tab -->
+<a class="flex flex-col items-center justify-center text-primary dark:text-primary-fixed-dim hover:bg-surface-container-low active:scale-90 transition-transform w-1/4 rounded-lg py-1" href="#">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="font-label-md text-label-md mt-1">Profile</span>
+</a>
+</nav>
+</body></html>

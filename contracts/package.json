@@ -1,0 +1,21 @@
+{
+  "name": "blockchain-vip-contracts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "hardhat test",
+    "compile": "hardhat compile",
+    "deploy:local": "hardhat run scripts/deploy.ts",
+    "deploy:sepolia": "hardhat run scripts/deploy.ts --build-profile production --network sepolia"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox-viem": "latest",
+    "@types/node": "latest",
+    "hardhat": "latest",
+    "typescript": "latest"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2"
+  }
+}

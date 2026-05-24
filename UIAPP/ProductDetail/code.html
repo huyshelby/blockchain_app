@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Product Detail Page</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"tertiary-fixed-dim": "#ffbb0c", "on-primary-fixed": "#3e0400", background: "#fff8f6", "tertiary-container": "#976d00", "surface-dim": "#f2d3cd", "error-container": "#ffdad6", "inverse-primary": "#ffb4a5", "primary-fixed": "#ffdad3", "surface-container-low": "#fff0ee", "on-tertiary": "#ffffff", "on-surface": "#281714", "on-error": "#ffffff", "on-secondary-container": "#fffbff", "surface-container-lowest": "#ffffff", error: "#ba1a1a", "surface-bright": "#fff8f6", "on-primary-fixed-variant": "#8e1400", "on-primary": "#ffffff", "surface-variant": "#fbdcd6", "on-secondary-fixed": "#410003", "inverse-surface": "#3f2c28", "inverse-on-surface": "#ffede9", "surface-tint": "#ba1d00", "surface-container-high": "#ffe2dc", "primary-fixed-dim": "#ffb4a5", "on-tertiary-fixed": "#271900", "surface-container-highest": "#fbdcd6", "on-tertiary-fixed-variant": "#5d4200", tertiary: "#785600", "primary-container": "#db3416", "secondary-fixed": "#ffdad6", "secondary-fixed-dim": "#ffb4ac", "outline-variant": "#e5beb6", primary: "#b51c00", "secondary-container": "#e51d25", "on-secondary-fixed-variant": "#93000e", "on-primary-container": "#fffbff", outline: "#906f69", "on-error-container": "#93000a", "on-secondary": "#ffffff", "tertiary-fixed": "#ffdea6", "on-background": "#281714", "surface-container": "#ffe9e5", "on-tertiary-container": "#fffbff", surface: "#fff8f6", "on-surface-variant": "#5c403a", secondary: "#bb0015"}, borderRadius: {DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px"}, spacing: {lg: "24px", xl: "32px", gutter: "12px", "container-margin": "16px", sm: "8px", md: "16px", xs: "4px", base: "4px"}, fontFamily: {"label-lg": ["Inter"], "title-lg": ["Inter"], "body-lg": ["Inter"], "label-sm": ["Inter"], "headline-md": ["Inter"], "body-md": ["Inter"], "body-sm": ["Inter"], "title-md": ["Inter"], "label-md": ["Inter"], "display-lg": ["Inter"], "headline-lg": ["Inter"], headline: ["Inter"], display: ["Inter"], body: ["Inter"], label: ["Inter"]}, fontSize: {"label-lg": ["14px", {lineHeight: "20px", fontWeight: "600"}], "title-lg": ["18px", {lineHeight: "24px", fontWeight: "600"}], "body-lg": ["16px", {lineHeight: "24px", fontWeight: "400"}], "label-sm": ["10px", {lineHeight: "12px", fontWeight: "700"}], "headline-md": ["20px", {lineHeight: "28px", fontWeight: "600"}], "body-md": ["14px", {lineHeight: "20px", fontWeight: "400"}], "body-sm": ["12px", {lineHeight: "16px", fontWeight: "400"}], "title-md": ["16px", {lineHeight: "24px", fontWeight: "600"}], "label-md": ["12px", {lineHeight: "16px", fontWeight: "500"}], "display-lg": ["32px", {lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700"}], "headline-lg": ["24px", {lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "700"}]}}}};</script>
+<style>
+        /* Hide scrollbar for clean horizontal scrolling */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        
+        /* Ambient shadow for level 1 cards */
+        .ambient-shadow-sm {
+            box-shadow: 0px 4px 12px rgba(40, 23, 20, 0.05);
+        }
+        
+        /* Sticky header shadow */
+        .ambient-shadow-md {
+            box-shadow: 0px 8px 24px rgba(40, 23, 20, 0.08);
+        }
+        
+        /* Ensure safe area padding for modern mobile devices */
+        .pb-safe {
+            padding-bottom: env(safe-area-inset-bottom, 16px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-container-low text-on-surface font-sans antialiased overflow-x-hidden min-h-screen pb-[80px]">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex items-center justify-between px-container-margin py-sm bg-surface transition-colors duration-300 border-b border-outline-variant shadow-sm h-[56px]">
+<button aria-label="Go Back" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-variant active:scale-95 transition-transform text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<!-- Search Bar Placeholder -->
+<div class="flex-1 mx-sm bg-surface-container-highest rounded-full h-9 flex items-center px-sm">
+<span class="material-symbols-outlined text-on-surface-variant ml-xs text-[20px]" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-md font-body-md text-on-surface flex-1 min-w-0 px-sm placeholder:text-on-surface-variant/70 h-full py-0" placeholder="Search products..." type="text"/>
+</div>
+<div class="flex items-center gap-xs">
+<button aria-label="Share" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-variant active:scale-95 transition-transform text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="share">share</span>
+</button>
+<button aria-label="Shopping Cart" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-variant active:scale-95 transition-transform text-on-surface-variant relative">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+<span class="absolute top-1 right-1 bg-primary text-on-primary font-label-sm text-label-sm rounded-full w-4 h-4 flex items-center justify-center border border-surface">2</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas (starts below fixed header) -->
+<main class="pt-[56px]">
+<!-- Image Gallery Carousel -->
+<section class="relative w-full aspect-square bg-surface-container-lowest overflow-hidden">
+<!-- Main Image -->
+<img alt="Premium Noise Cancelling Wireless Headphones - Silver Edition" class="w-full h-full object-cover" data-alt="A sleek pair of silver wireless noise-cancelling headphones resting on a minimalist white surface. The studio lighting is bright and soft, highlighting the metallic finish and plush ear cushions. The overall aesthetic is modern, clean, and high-end, utilizing a light color palette with crisp details. The mood is sophisticated and technologically advanced." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQwijwHNfvg2WfafuKJiYoR5zEGgRcm_FbiBUQqWwbLK5CLBD3Yrxcm7c-oMOgszYuXMxUQIPlcUC7MdIC9svk_PdfG8x1rh0-QFkIFKQE5xXbwvsLrIAeHHrZRIswMDDE9wWFKZiB0ejPR4KQaV_d3Y3SRx6A2hfde0y3ptv9_kLB64hcd6FoHsXLmIX4zQuQviVeZSHFyiGWhREK-6S01BbH9qh6TUUiTWyvNmPyOGTZey3M8qoyU72VysalW66C-ps3SaN9X6w"/>
+<!-- Badges -->
+<div class="absolute top-md left-md flex flex-col gap-xs">
+<span class="bg-primary text-on-primary font-label-sm text-label-sm px-2 py-1 rounded-sm uppercase tracking-wider">Mall</span>
+</div>
+<!-- Pagination Dots -->
+<div class="absolute bottom-md left-1/2 -translate-x-1/2 flex gap-2">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<div class="w-2 h-2 rounded-full bg-surface-variant opacity-70"></div>
+<div class="w-2 h-2 rounded-full bg-surface-variant opacity-70"></div>
+<div class="w-2 h-2 rounded-full bg-surface-variant opacity-70"></div>
+</div>
+</section>
+<!-- Product Core Info Section -->
+<section class="bg-surface px-container-margin py-md mb-sm ambient-shadow-sm">
+<!-- Pricing -->
+<div class="flex items-end gap-sm mb-sm">
+<h2 class="font-headline-lg text-headline-lg text-primary">$199.00</h2>
+<div class="flex items-center gap-xs mb-1">
+<span class="font-body-md text-body-md text-on-surface-variant line-through">$249.00</span>
+<span class="bg-error-container text-error font-label-sm text-label-sm px-1.5 py-0.5 rounded-sm">-20%</span>
+</div>
+</div>
+<!-- Title -->
+<h1 class="font-title-md text-title-md text-on-surface mb-xs leading-snug line-clamp-2">
+                Premium Noise Cancelling Wireless Headphones - Silver Edition
+            </h1>
+<!-- Stats (Rating & Sales) -->
+<div class="flex items-center text-on-surface-variant gap-3 mt-xs">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-[16px]" data-icon="star" data-weight="fill">star</span>
+<span class="font-label-md text-label-md text-on-surface">4.8</span>
+<span class="font-body-sm text-body-sm">(500+)</span>
+</div>
+<div class="w-[1px] h-3 bg-outline-variant"></div>
+<span class="font-body-sm text-body-sm">1.2k sold</span>
+</div>
+</section>
+<!-- Variation Selector Section -->
+<section class="bg-surface px-container-margin py-md mb-sm ambient-shadow-sm flex flex-col gap-md">
+<!-- Color Selection -->
+<div>
+<h3 class="font-label-lg text-label-lg text-on-surface mb-sm">Color</h3>
+<div class="flex flex-wrap gap-sm">
+<button class="px-md py-sm rounded-lg border-2 border-primary bg-primary-fixed/20 font-label-md text-label-md text-primary active:scale-95 transition-transform">
+                        Silver
+                    </button>
+<button class="px-md py-sm rounded-lg border border-outline-variant bg-surface-container-lowest font-body-md text-body-md text-on-surface hover:bg-surface-variant active:scale-95 transition-transform">
+                        Black
+                    </button>
+<button class="px-md py-sm rounded-lg border border-outline-variant bg-surface-container-lowest font-body-md text-body-md text-on-surface hover:bg-surface-variant active:scale-95 transition-transform">
+                        Blue
+                    </button>
+</div>
+</div>
+<!-- Size Selection -->
+<div>
+<h3 class="font-label-lg text-label-lg text-on-surface mb-sm">Size</h3>
+<div class="flex flex-wrap gap-sm">
+<button class="px-md py-sm rounded-lg border-2 border-primary bg-primary-fixed/20 font-label-md text-label-md text-primary active:scale-95 transition-transform">
+                        Standard
+                    </button>
+<button class="px-md py-sm rounded-lg border border-outline-variant bg-surface-container-lowest font-body-md text-body-md text-on-surface hover:bg-surface-variant active:scale-95 transition-transform opacity-50 cursor-not-allowed">
+                        XL (Out of Stock)
+                    </button>
+</div>
+</div>
+</section>
+<!-- Delivery Info -->
+<section class="bg-surface px-container-margin py-sm mb-sm ambient-shadow-sm flex flex-col gap-y-3">
+<div class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px] mt-0.5" data-icon="local_shipping">local_shipping</span>
+<div class="flex-1">
+<div class="font-label-md text-label-md text-on-surface">Standard Delivery</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Estimated arrival: Oct 25 - 28</div>
+</div>
+<div class="font-label-md text-label-md text-on-surface">$2.99</div>
+</div>
+</section>
+<!-- Product Description -->
+<section class="bg-surface px-container-margin py-md mb-sm ambient-shadow-sm">
+<div class="flex items-center justify-between mb-sm">
+<h3 class="font-title-md text-title-md text-on-surface">Product Details</h3>
+<button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-variant active:scale-95 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="expand_more">expand_more</span>
+</button>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed line-clamp-3">
+                Experience pure audio bliss with our Premium Noise Cancelling Wireless Headphones. Featuring advanced Active Noise Cancellation (ANC) technology, high-fidelity sound, and an ergonomic design for all-day comfort. The silver edition offers a sleek, modern finish that complements any style. Up to 30 hours of battery life.
+            </p>
+</section>
+<!-- Customer Reviews Preview -->
+<section class="bg-surface px-container-margin py-md mb-sm ambient-shadow-sm">
+<div class="flex items-center justify-between mb-md">
+<div>
+<h3 class="font-title-md text-title-md text-on-surface inline-block">Product Ratings</h3>
+<span class="font-body-sm text-body-sm text-primary ml-2">(150 reviews)</span>
+</div>
+<div class="flex items-center text-primary font-label-md text-label-md gap-1">
+<span>See All</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+<!-- Single Review Preview -->
+<div class="border-t border-outline-variant pt-sm">
+<div class="flex items-center gap-xs mb-2">
+<div class="flex text-tertiary-fixed-dim">
+<span class="material-symbols-outlined text-[14px]" data-icon="star" data-weight="fill">star</span>
+<span class="material-symbols-outlined text-[14px]" data-icon="star" data-weight="fill">star</span>
+<span class="material-symbols-outlined text-[14px]" data-icon="star" data-weight="fill">star</span>
+<span class="material-symbols-outlined text-[14px]" data-icon="star" data-weight="fill">star</span>
+<span class="material-symbols-outlined text-[14px]" data-icon="star" data-weight="fill">star</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant ml-2">J***.</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface mb-2">
+                    Absolutely love these! The noise cancellation is amazing for my daily commute. The silver finish looks very premium.
+                </p>
+<div class="flex gap-2">
+<img alt="Review image" class="w-16 h-16 object-cover rounded-md border border-outline-variant" data-alt="A close-up snapshot of silver wireless headphones resting on a wooden desk. The lighting is natural and slightly warm. The aesthetic is casual user-generated content, focusing on the product's finish and ear cups in an everyday setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUaSuaOfetDk1xYztdOnFYYWjLojdmTVPkunA-Odu5S84E9WQ51gfyy25S3JLhZAn303aYqgd-8iBhknJn8bhdWwghKM258iRyH8dGTxqiCMglI37eS2XimOCJ6TDCXAjy7X4jHW_KcxTaqlaSrGKt8wQe2Y-5CyUVgXOUlgV7hBPAHMtXkfSEZOS0SskLUPTtumuwcFaltKpPrdm71IZMzNMPtqyAFavVaD2XqeGmB76ZpVELmzEJuHwXSPbSoo_XOM65N391WOM"/>
+</div>
+</div>
+</section>
+<!-- Spacing to ensure bottom action bar doesn't overlap content -->
+<div class="h-4"></div>
+</main>
+<!-- Bottom Action Bar (Fixed) -->
+<div class="fixed bottom-0 w-full z-50 bg-surface border-t border-outline-variant shadow-[0_-4px_12px_rgba(40,23,20,0.05)] flex px-xs py-sm pb-safe gap-xs items-center h-[72px]">
+<!-- Secondary Icons -->
+<div class="flex gap-1 border-r border-outline-variant pr-xs mr-xs">
+<button class="flex flex-col items-center justify-center w-12 h-12 text-on-surface-variant hover:text-primary active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[24px]" data-icon="chat">chat</span>
+<span class="font-label-sm text-label-sm mt-0.5">Chat</span>
+</button>
+<button class="flex flex-col items-center justify-center w-12 h-12 text-on-surface-variant hover:text-primary active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[24px]" data-icon="add_shopping_cart">add_shopping_cart</span>
+<span class="font-label-sm text-label-sm mt-0.5">Cart</span>
+</button>
+</div>
+<!-- Primary Action Buttons -->
+<div class="flex-1 flex gap-xs">
+<button class="flex-1 h-12 rounded-lg border-2 border-primary bg-surface font-label-md text-label-md text-primary active:bg-primary-fixed/20 active:scale-[0.98] transition-all flex items-center justify-center">
+                 Add to Cart
+             </button>
+<button class="flex-1 h-12 rounded-lg bg-primary font-label-md text-label-md text-on-primary shadow-sm hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center">
+                 Buy Now
+             </button>
+</div>
+</div>
+</body></html>
