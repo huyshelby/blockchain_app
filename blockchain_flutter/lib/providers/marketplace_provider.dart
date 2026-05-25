@@ -1,25 +1,56 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'wallet_provider.dart';
 
-final productsProvider =
-    FutureProvider.autoDispose<List<Map<String, dynamic>>>((ref) async {
-  final service = ref.watch(marketplaceServiceProvider);
-  final nextId = await service.getNextProductId();
-  final products = <Map<String, dynamic>>[];
-  for (var i = BigInt.one; i < nextId; i += BigInt.one) {
-    final p = await service.getProduct(i);
-    if (p['active'] == true) products.add(p);
-  }
-  return products;
+import '../api/marketplace_api_client.dart';
+import '../models/order.dart';
+import '../models/product.dart';
+
+final marketplaceApiClientProvider = Provider.autoDispose<MarketplaceApiClient>(
+  (ref) {
+    return MarketplaceApiClient();
+  },
+);
+
+final productsProvider = FutureProvider.autoDispose<List<Product>>((ref) async {
+  final api = ref.watch(marketplaceApiClientProvider);
+  return api.fetchProducts();
 });
+
+final featuredProductsProvider = FutureProvider.autoDispose<List<Product>>((
+  ref,
+) async {
+  final api = ref.watch(marketplaceApiClientProvider);
+  return api.fetchProducts(tag: 'featured');
+});
+
+final flashSaleProductsProvider = FutureProvider.autoDispose<List<Product>>((
+  ref,
+) async {
+  final api = ref.watch(marketplaceApiClientProvider);
+  return api.fetchProducts(tag: 'flash-sale');
+});
+
+final productProvider = FutureProvider.autoDispose.family<Product, BigInt>((
+  ref,
+  productId,
+) async {
+  final api = ref.watch(marketplaceApiClientProvider);
+  return api.fetchProduct(productId);
+});
+
+final buyerOrdersProvider = FutureProvider.autoDispose
+    .family<List<MarketplaceOrder>, String>((ref, buyer) async {
+      final api = ref.watch(marketplaceApiClientProvider);
+      return api.fetchOrders(buyer: buyer);
+    });
+
+final sellerOrdersProvider = FutureProvider.autoDispose
+    .family<List<MarketplaceOrder>, String>((ref, seller) async {
+      final api = ref.watch(marketplaceApiClientProvider);
+      return api.fetchOrders(seller: seller);
+    });
 
 final orderProvider = FutureProvider.autoDispose
-    .family<Map<String, dynamic>, BigInt>((ref, orderId) async {
-  final service = ref.watch(marketplaceServiceProvider);
-  return service.getOrder(orderId);
-});
-
-final nextProductIdProvider = FutureProvider.autoDispose<BigInt>((ref) async {
-  final service = ref.watch(marketplaceServiceProvider);
-  return service.getNextProductId();
-});
+    .family<MarketplaceOrder, BigInt>((ref, orderId) async {
+      final api = ref.watch(marketplaceApiClientProvider);
+      return api.fetchOrder(orderId);
+    });

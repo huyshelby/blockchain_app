@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_typography.dart';
+import '../models/product.dart';
+import '../providers/marketplace_provider.dart';
+import '../providers/wallet_provider.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
-  final Map<String, dynamic>? product;
+  final Product? product;
 
   const ProductDetailScreen({super.key, this.product});
 
   @override
-  ConsumerState<ProductDetailScreen> createState() => _ProductDetailScreenState();
+  ConsumerState<ProductDetailScreen> createState() =>
+      _ProductDetailScreenState();
 }
 
 class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
@@ -17,12 +21,27 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   int _selectedSize = 0;
   int _currentImage = 0;
 
-  final List<String> _colors = ['Silver', 'Black', 'Blue'];
-  final List<String> _sizes = ['Standard', 'XL (Out of Stock)'];
-  final List<bool> _sizeAvailable = [true, false];
+  Product get product => widget.product!;
+
+  List<String> get _colors => _variantValues('color', const ['Default']);
+
+  List<String> get _sizes => _variantValues('size', const ['Standard']);
+
+  List<bool> get _sizeAvailable => List.filled(_sizes.length, true);
+
+  List<String> _variantValues(String name, List<String> fallback) {
+    for (final variant in product.metadata.variants) {
+      if (variant.name.toLowerCase() == name) return variant.values;
+    }
+    return fallback;
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (widget.product == null) {
+      return const Scaffold(body: Center(child: Text('Product not found')));
+    }
+
     return Scaffold(
       backgroundColor: AppColors.surfaceContainerLow,
       body: Column(
@@ -59,12 +78,18 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
       decoration: const BoxDecoration(
         color: AppColors.background,
-        border: Border(bottom: BorderSide(color: AppColors.outlineVariant, width: 0.5)),
+        border: Border(
+          bottom: BorderSide(color: AppColors.outlineVariant, width: 0.5),
+        ),
       ),
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new, size: 16, color: AppColors.onBackground),
+            icon: const Icon(
+              Icons.arrow_back_ios_new,
+              size: 16,
+              color: AppColors.onBackground,
+            ),
             onPressed: () => Navigator.pop(context),
           ),
           Expanded(
@@ -77,12 +102,20 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Row(
                 children: [
-                  Icon(Icons.search, size: 19, color: AppColors.onSurfaceVariant),
+                  Icon(
+                    Icons.search,
+                    size: 19,
+                    color: AppColors.onSurfaceVariant,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       'Search products...',
-                      style: AppTypography.bodyMd.copyWith(color: AppColors.onSurfaceVariant.withValues(alpha: 0.7)),
+                      style: AppTypography.bodyMd.copyWith(
+                        color: AppColors.onSurfaceVariant.withValues(
+                          alpha: 0.7,
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -90,14 +123,22 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.share_outlined, size: 20, color: AppColors.onBackground),
+            icon: const Icon(
+              Icons.share_outlined,
+              size: 20,
+              color: AppColors.onBackground,
+            ),
             onPressed: () {},
           ),
           Stack(
             clipBehavior: Clip.none,
             children: [
               IconButton(
-                icon: const Icon(Icons.shopping_cart_outlined, size: 20, color: AppColors.onBackground),
+                icon: const Icon(
+                  Icons.shopping_cart_outlined,
+                  size: 20,
+                  color: AppColors.onBackground,
+                ),
                 onPressed: () {},
               ),
               Positioned(
@@ -112,7 +153,13 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     border: Border.all(color: AppColors.background, width: 1),
                   ),
                   child: Center(
-                    child: Text('2', style: AppTypography.labelSm.copyWith(color: Colors.white, fontSize: 10)),
+                    child: Text(
+                      '2',
+                      style: AppTypography.labelSm.copyWith(
+                        color: Colors.white,
+                        fontSize: 10,
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -129,15 +176,19 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       child: Stack(
         children: [
           PageView.builder(
-            itemCount: 4,
+            itemCount: product.metadata.images.isEmpty
+                ? 1
+                : product.metadata.images.length,
             onPageChanged: (i) => setState(() => _currentImage = i),
             itemBuilder: (_, i) => Container(
               color: Colors.white,
               child: Image.network(
-                'https://www.figma.com/api/mcp/asset/7db8254d-19e3-45d6-b4ce-9cd10d5e576f',
+                product.metadata.images.isEmpty
+                    ? product.imageUrl
+                    : product.metadata.images[i],
                 fit: BoxFit.cover,
                 errorBuilder: (c, e, s) => const Center(
-                  child: Icon(Icons.headphones, size: 80, color: AppColors.outline),
+                  child: Icon(Icons.image, size: 80, color: AppColors.outline),
                 ),
               ),
             ),
@@ -151,7 +202,13 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 color: AppColors.primary,
                 borderRadius: BorderRadius.circular(2),
               ),
-              child: Text('MALL', style: AppTypography.labelSm.copyWith(color: Colors.white, letterSpacing: 0.5)),
+              child: Text(
+                'MALL',
+                style: AppTypography.labelSm.copyWith(
+                  color: Colors.white,
+                  letterSpacing: 0.5,
+                ),
+              ),
             ),
           ),
           Positioned(
@@ -160,15 +217,24 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             right: 0,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(4, (i) => Container(
-                width: 8,
-                height: 8,
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                decoration: BoxDecoration(
-                  color: i == _currentImage ? AppColors.primary : AppColors.surfaceContainerHighest.withValues(alpha: 0.7),
-                  shape: BoxShape.circle,
+              children: List.generate(
+                product.metadata.images.isEmpty
+                    ? 1
+                    : product.metadata.images.length,
+                (i) => Container(
+                  width: 8,
+                  height: 8,
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  decoration: BoxDecoration(
+                    color: i == _currentImage
+                        ? AppColors.primary
+                        : AppColors.surfaceContainerHighest.withValues(
+                            alpha: 0.7,
+                          ),
+                    shape: BoxShape.circle,
+                  ),
                 ),
-              )),
+              ),
             ),
           ),
         ],
@@ -186,7 +252,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text('\$199.00', style: AppTypography.headlineLg.copyWith(color: AppColors.primary)),
+              Text(
+                product.priceLabel,
+                style: AppTypography.headlineLg.copyWith(
+                  color: AppColors.primary,
+                ),
+              ),
               const SizedBox(width: 8),
               Padding(
                 padding: const EdgeInsets.only(bottom: 4),
@@ -201,12 +272,20 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     ),
                     const SizedBox(width: 4),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.errorContainer,
                         borderRadius: BorderRadius.circular(2),
                       ),
-                      child: Text('-20%', style: AppTypography.labelSm.copyWith(color: AppColors.error)),
+                      child: Text(
+                        '-20%',
+                        style: AppTypography.labelSm.copyWith(
+                          color: AppColors.error,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -215,20 +294,38 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           ),
           const SizedBox(height: 4),
           Text(
-            'Premium Noise Cancelling Wireless Headphones - Silver Edition',
-            style: AppTypography.titleMd.copyWith(color: AppColors.onBackground, height: 22 / 16),
+            product.metadata.name,
+            style: AppTypography.titleMd.copyWith(
+              color: AppColors.onBackground,
+              height: 22 / 16,
+            ),
           ),
           const SizedBox(height: 4),
           Row(
             children: [
               Icon(Icons.star, size: 13, color: AppColors.tertiary),
               const SizedBox(width: 4),
-              Text('4.8', style: AppTypography.labelMd.copyWith(color: AppColors.onBackground)),
-              Text(' (500+)', style: AppTypography.bodySm.copyWith(color: AppColors.onSurfaceVariant)),
+              Text(
+                '${product.metadata.rating}',
+                style: AppTypography.labelMd.copyWith(
+                  color: AppColors.onBackground,
+                ),
+              ),
+              Text(
+                ' (${product.metadata.soldCount}+)',
+                style: AppTypography.bodySm.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                ),
+              ),
               const SizedBox(width: 12),
               Container(width: 1, height: 12, color: AppColors.outlineVariant),
               const SizedBox(width: 12),
-              Text('1.2k sold', style: AppTypography.bodySm.copyWith(color: AppColors.onSurfaceVariant)),
+              Text(
+                '${product.metadata.soldCount}+ sold',
+                style: AppTypography.bodySm.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                ),
+              ),
             ],
           ),
         ],
@@ -243,63 +340,105 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Color', style: AppTypography.labelLg.copyWith(color: AppColors.onBackground)),
-          const SizedBox(height: 8),
-          Row(
-            children: List.generate(_colors.length, (i) => Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: GestureDetector(
-                onTap: () => setState(() => _selectedColor = i),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: _selectedColor == i ? const Color(0x33FFDAD3) : Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: _selectedColor == i ? AppColors.primary : AppColors.outlineVariant,
-                      width: _selectedColor == i ? 2 : 1,
-                    ),
-                  ),
-                  child: Text(
-                    _colors[i],
-                    style: _selectedColor == i
-                        ? AppTypography.labelMd.copyWith(color: AppColors.primary)
-                        : AppTypography.bodyMd.copyWith(color: AppColors.onBackground),
-                  ),
-                ),
-              ),
-            )),
+          Text(
+            'Color',
+            style: AppTypography.labelLg.copyWith(
+              color: AppColors.onBackground,
+            ),
           ),
-          const SizedBox(height: 16),
-          Text('Size', style: AppTypography.labelLg.copyWith(color: AppColors.onBackground)),
           const SizedBox(height: 8),
           Row(
-            children: List.generate(_sizes.length, (i) => Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: GestureDetector(
-                onTap: _sizeAvailable[i] ? () => setState(() => _selectedSize = i) : null,
-                child: Opacity(
-                  opacity: _sizeAvailable[i] ? 1.0 : 0.5,
+            children: List.generate(
+              _colors.length,
+              (i) => Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: GestureDetector(
+                  onTap: () => setState(() => _selectedColor = i),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 18,
+                      vertical: 10,
+                    ),
                     decoration: BoxDecoration(
-                      color: _selectedSize == i && _sizeAvailable[i] ? const Color(0x33FFDAD3) : Colors.white,
+                      color: _selectedColor == i
+                          ? const Color(0x33FFDAD3)
+                          : Colors.white,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: _selectedSize == i && _sizeAvailable[i] ? AppColors.primary : AppColors.outlineVariant,
-                        width: _selectedSize == i && _sizeAvailable[i] ? 2 : 1,
+                        color: _selectedColor == i
+                            ? AppColors.primary
+                            : AppColors.outlineVariant,
+                        width: _selectedColor == i ? 2 : 1,
                       ),
                     ),
                     child: Text(
-                      _sizes[i],
-                      style: _selectedSize == i && _sizeAvailable[i]
-                          ? AppTypography.labelMd.copyWith(color: AppColors.primary)
-                          : AppTypography.bodyMd.copyWith(color: AppColors.onBackground),
+                      _colors[i],
+                      style: _selectedColor == i
+                          ? AppTypography.labelMd.copyWith(
+                              color: AppColors.primary,
+                            )
+                          : AppTypography.bodyMd.copyWith(
+                              color: AppColors.onBackground,
+                            ),
                     ),
                   ),
                 ),
               ),
-            )),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Size',
+            style: AppTypography.labelLg.copyWith(
+              color: AppColors.onBackground,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: List.generate(
+              _sizes.length,
+              (i) => Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: GestureDetector(
+                  onTap: _sizeAvailable[i]
+                      ? () => setState(() => _selectedSize = i)
+                      : null,
+                  child: Opacity(
+                    opacity: _sizeAvailable[i] ? 1.0 : 0.5,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _selectedSize == i && _sizeAvailable[i]
+                            ? const Color(0x33FFDAD3)
+                            : Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: _selectedSize == i && _sizeAvailable[i]
+                              ? AppColors.primary
+                              : AppColors.outlineVariant,
+                          width: _selectedSize == i && _sizeAvailable[i]
+                              ? 2
+                              : 1,
+                        ),
+                      ),
+                      child: Text(
+                        _sizes[i],
+                        style: _selectedSize == i && _sizeAvailable[i]
+                            ? AppTypography.labelMd.copyWith(
+                                color: AppColors.primary,
+                              )
+                            : AppTypography.bodyMd.copyWith(
+                                color: AppColors.onBackground,
+                              ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -312,18 +451,37 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
-          Icon(Icons.local_shipping_outlined, size: 18, color: AppColors.onSurfaceVariant),
+          Icon(
+            Icons.local_shipping_outlined,
+            size: 18,
+            color: AppColors.onSurfaceVariant,
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Standard Delivery', style: AppTypography.labelMd.copyWith(color: AppColors.onBackground)),
-                Text('Estimated arrival: Oct 25 - 28', style: AppTypography.bodySm.copyWith(color: AppColors.onSurfaceVariant)),
+                Text(
+                  'Standard Delivery',
+                  style: AppTypography.labelMd.copyWith(
+                    color: AppColors.onBackground,
+                  ),
+                ),
+                Text(
+                  'Estimated arrival: Oct 25 - 28',
+                  style: AppTypography.bodySm.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                  ),
+                ),
               ],
             ),
           ),
-          Text('\$2.99', style: AppTypography.labelMd.copyWith(color: AppColors.onBackground)),
+          Text(
+            '\$2.99',
+            style: AppTypography.labelMd.copyWith(
+              color: AppColors.onBackground,
+            ),
+          ),
         ],
       ),
     );
@@ -339,14 +497,26 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Product Details', style: AppTypography.titleMd.copyWith(color: AppColors.onBackground)),
-              Icon(Icons.keyboard_arrow_down, size: 20, color: AppColors.onSurfaceVariant),
+              Text(
+                'Product Details',
+                style: AppTypography.titleMd.copyWith(
+                  color: AppColors.onBackground,
+                ),
+              ),
+              Icon(
+                Icons.keyboard_arrow_down,
+                size: 20,
+                color: AppColors.onSurfaceVariant,
+              ),
             ],
           ),
           const SizedBox(height: 8),
           Text(
-            'Experience pure audio bliss with our Premium Noise Cancelling Wireless Headphones. Featuring advanced Active Noise Cancellation (ANC) technology, high-…',
-            style: AppTypography.bodyMd.copyWith(color: AppColors.onSurfaceVariant, height: 22.75 / 14),
+            product.metadata.description,
+            style: AppTypography.bodyMd.copyWith(
+              color: AppColors.onSurfaceVariant,
+              height: 22.75 / 14,
+            ),
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
           ),
@@ -367,14 +537,29 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             children: [
               Row(
                 children: [
-                  Text('Product Ratings', style: AppTypography.titleMd.copyWith(color: AppColors.onBackground)),
+                  Text(
+                    'Product Ratings',
+                    style: AppTypography.titleMd.copyWith(
+                      color: AppColors.onBackground,
+                    ),
+                  ),
                   const SizedBox(width: 4),
-                  Text('(150 reviews)', style: AppTypography.bodySm.copyWith(color: AppColors.primary)),
+                  Text(
+                    '(150 reviews)',
+                    style: AppTypography.bodySm.copyWith(
+                      color: AppColors.primary,
+                    ),
+                  ),
                 ],
               ),
               Row(
                 children: [
-                  Text('See All', style: AppTypography.labelMd.copyWith(color: AppColors.primary)),
+                  Text(
+                    'See All',
+                    style: AppTypography.labelMd.copyWith(
+                      color: AppColors.primary,
+                    ),
+                  ),
                   const SizedBox(width: 4),
                   Icon(Icons.chevron_right, size: 14, color: AppColors.primary),
                 ],
@@ -385,22 +570,35 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           Container(
             padding: const EdgeInsets.only(top: 9),
             decoration: const BoxDecoration(
-              border: Border(top: BorderSide(color: AppColors.outlineVariant, width: 0.5)),
+              border: Border(
+                top: BorderSide(color: AppColors.outlineVariant, width: 0.5),
+              ),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    ...List.generate(5, (_) => Icon(Icons.star, size: 12, color: AppColors.tertiary)),
+                    ...List.generate(
+                      5,
+                      (_) =>
+                          Icon(Icons.star, size: 12, color: AppColors.tertiary),
+                    ),
                     const SizedBox(width: 8),
-                    Text('J***.', style: AppTypography.bodySm.copyWith(color: AppColors.onSurfaceVariant)),
+                    Text(
+                      'J***.',
+                      style: AppTypography.bodySm.copyWith(
+                        color: AppColors.onSurfaceVariant,
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Absolutely love these! The noise cancellation is amazing for my daily commute. The silver finish looks very premium.',
-                  style: AppTypography.bodySm.copyWith(color: AppColors.onBackground),
+                  style: AppTypography.bodySm.copyWith(
+                    color: AppColors.onBackground,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Container(
@@ -414,7 +612,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   child: Image.network(
                     'https://www.figma.com/api/mcp/asset/b4c1386b-846b-48a1-8853-8d75daa4c197',
                     fit: BoxFit.cover,
-                    errorBuilder: (c, e, s) => Icon(Icons.image, color: AppColors.onSurfaceVariant),
+                    errorBuilder: (c, e, s) =>
+                        Icon(Icons.image, color: AppColors.onSurfaceVariant),
                   ),
                 ),
               ],
@@ -423,6 +622,17 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _buyNow() async {
+    final service = ref.read(marketplaceServiceProvider);
+    await service.buyProduct(product.id, product.priceWei);
+    ref.invalidate(buyerOrdersProvider(service.currentAddress.hexEip55));
+    if (mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Purchase submitted')));
+    }
   }
 
   Widget _buildBottomBar(BuildContext context) {
@@ -435,14 +645,27 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       ),
       decoration: const BoxDecoration(
         color: AppColors.background,
-        border: Border(top: BorderSide(color: AppColors.outlineVariant, width: 0.5)),
-        boxShadow: [BoxShadow(color: Color(0x0D281714), blurRadius: 6, offset: Offset(0, -4))],
+        border: Border(
+          top: BorderSide(color: AppColors.outlineVariant, width: 0.5),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Color(0x0D281714),
+            blurRadius: 6,
+            offset: Offset(0, -4),
+          ),
+        ],
       ),
       child: Row(
         children: [
           _BottomIcon(icon: Icons.chat_bubble_outline, label: 'Chat'),
           _BottomIcon(icon: Icons.shopping_cart_outlined, label: 'Cart'),
-          Container(width: 1, height: 48, margin: const EdgeInsets.symmetric(horizontal: 4), color: AppColors.outlineVariant),
+          Container(
+            width: 1,
+            height: 48,
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            color: AppColors.outlineVariant,
+          ),
           Expanded(
             child: Row(
               children: [
@@ -457,7 +680,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                         border: Border.all(color: AppColors.primary, width: 2),
                       ),
                       child: Center(
-                        child: Text('Add to Cart', style: AppTypography.labelMd.copyWith(color: AppColors.primary)),
+                        child: Text(
+                          'Add to Cart',
+                          style: AppTypography.labelMd.copyWith(
+                            color: AppColors.primary,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -465,16 +693,27 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 const SizedBox(width: 4),
                 Expanded(
                   child: GestureDetector(
-                    onTap: () {},
+                    onTap: _buyNow,
                     child: Container(
                       height: 48,
                       decoration: BoxDecoration(
                         color: AppColors.primary,
                         borderRadius: BorderRadius.circular(8),
-                        boxShadow: const [BoxShadow(color: Color(0x0D000000), blurRadius: 1, offset: Offset(0, 1))],
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color(0x0D000000),
+                            blurRadius: 1,
+                            offset: Offset(0, 1),
+                          ),
+                        ],
                       ),
                       child: Center(
-                        child: Text('Buy Now', style: AppTypography.labelMd.copyWith(color: Colors.white)),
+                        child: Text(
+                          'Buy Now',
+                          style: AppTypography.labelMd.copyWith(
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -503,7 +742,12 @@ class _BottomIcon extends StatelessWidget {
         children: [
           Icon(icon, size: 20, color: AppColors.onSurfaceVariant),
           const SizedBox(height: 2),
-          Text(label, style: AppTypography.labelSm.copyWith(color: AppColors.onSurfaceVariant)),
+          Text(
+            label,
+            style: AppTypography.labelSm.copyWith(
+              color: AppColors.onSurfaceVariant,
+            ),
+          ),
         ],
       ),
     );

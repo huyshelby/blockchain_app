@@ -1,5 +1,10 @@
 const String rpcUrl = 'http://127.0.0.1:8545';
 
+const String apiBaseUrl = String.fromEnvironment(
+  'API_BASE_URL',
+  defaultValue: 'http://10.0.2.2:3000',
+);
+
 const String sellerPrivateKey =
     'ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80';
 const String buyerPrivateKey =

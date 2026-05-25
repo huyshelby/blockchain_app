@@ -1,64 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_typography.dart';
+import '../models/order.dart';
+import '../providers/marketplace_provider.dart';
+import '../providers/wallet_provider.dart';
 import '../widgets/bottom_nav_bar.dart';
 
-class OrdersScreen extends StatefulWidget {
+class OrdersScreen extends ConsumerStatefulWidget {
   const OrdersScreen({super.key});
 
   @override
-  State<OrdersScreen> createState() => _OrdersScreenState();
+  ConsumerState<OrdersScreen> createState() => _OrdersScreenState();
 }
 
-class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderStateMixin {
+class _OrdersScreenState extends ConsumerState<OrdersScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  final List<String> _tabs = ['All', 'To Pay', 'To Ship', 'To Receive', 'Completed'];
-
-  final List<_OrderData> _orders = [
-    _OrderData(
-      shopName: 'Tech Gadget Store',
-      status: 'Completed',
-      statusColor: AppColors.primary,
-      productName: 'Premium Wireless Noise-Cancelling Headphones Pro Max',
-      variant: 'Color: Matte Black',
-      quantity: 1,
-      price: '\$299.00',
-      total: '\$299.00',
-      imageUrl: 'https://www.figma.com/api/mcp/asset/774c2b2f-f627-474f-9a24-4374c0ded14b',
-      primaryAction: 'Rate',
-      primaryFilled: true,
-      secondaryAction: 'Buy Again',
-    ),
-    _OrderData(
-      shopName: 'Urban Sneaker Hub',
-      status: 'To Ship',
-      statusColor: AppColors.secondary,
-      productName: 'Limited Edition Urban Running Shoes',
-      variant: 'Size: US 10 | Color: Fire Red',
-      quantity: 1,
-      price: '\$145.50',
-      total: '\$145.50',
-      imageUrl: 'https://www.figma.com/api/mcp/asset/72b72794-59de-4ad9-b8b4-04530f6199c0',
-      primaryAction: 'Track Order',
-      primaryFilled: false,
-      secondaryAction: 'Contact Seller',
-    ),
-    _OrderData(
-      shopName: 'Modern Home Decor',
-      status: 'To Receive',
-      statusColor: AppColors.onSurfaceVariant,
-      productName: 'Minimalist Ceramic Vase - Nordic Design Collection',
-      variant: 'Style: Tall | Color: Off-White',
-      quantity: 2,
-      price: '\$34.00',
-      total: '\$68.00',
-      imageUrl: 'https://www.figma.com/api/mcp/asset/e78fd5a2-68ec-4f27-9cff-40dab5adfabf',
-      primaryAction: 'Track Order',
-      primaryFilled: false,
-      secondaryAction: null,
-      statusNote: 'Parcel is out for delivery',
-    ),
+  final List<String> _tabs = [
+    'All',
+    'To Pay',
+    'To Ship',
+    'To Receive',
+    'Completed',
   ];
 
   @override
@@ -104,20 +69,39 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
       ),
       decoration: const BoxDecoration(
         color: AppColors.background,
-        border: Border(bottom: BorderSide(color: AppColors.outlineVariant, width: 0.5)),
-        boxShadow: [BoxShadow(color: Color(0x0D000000), blurRadius: 1, offset: Offset(0, 1))],
+        border: Border(
+          bottom: BorderSide(color: AppColors.outlineVariant, width: 0.5),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Color(0x0D000000),
+            blurRadius: 1,
+            offset: Offset(0, 1),
+          ),
+        ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           const Padding(
             padding: EdgeInsets.all(8),
-            child: Icon(Icons.arrow_back_ios_new, size: 18, color: AppColors.onBackground),
+            child: Icon(
+              Icons.arrow_back_ios_new,
+              size: 18,
+              color: AppColors.onBackground,
+            ),
           ),
-          Text('My Orders', style: AppTypography.headlineLg.copyWith(color: AppColors.primary)),
+          Text(
+            'My Orders',
+            style: AppTypography.headlineLg.copyWith(color: AppColors.primary),
+          ),
           const Padding(
             padding: EdgeInsets.all(8),
-            child: Icon(Icons.shopping_cart_outlined, size: 20, color: AppColors.onBackground),
+            child: Icon(
+              Icons.shopping_cart_outlined,
+              size: 20,
+              color: AppColors.onBackground,
+            ),
           ),
         ],
       ),
@@ -172,17 +156,39 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
   }
 
   Widget _buildOrderList() {
-    return ListView.separated(
-      padding: const EdgeInsets.only(top: 8, bottom: 80),
-      itemCount: _orders.length,
-      separatorBuilder: (c, i) => const SizedBox(height: 8),
-      itemBuilder: (_, i) => _OrderCard(order: _orders[i]),
+    final address = ref
+        .watch(marketplaceServiceProvider)
+        .currentAddress
+        .hexEip55;
+    final orders = ref.watch(buyerOrdersProvider(address));
+
+    return orders.when(
+      data: (items) {
+        final selectedTab = _tabs[_tabController.index];
+        final visibleOrders = selectedTab == 'All'
+            ? items
+            : items
+                  .where((order) => order.buyerStatusLabel == selectedTab)
+                  .toList();
+        if (visibleOrders.isEmpty) {
+          return const Center(child: Text('No orders yet'));
+        }
+        return ListView.separated(
+          padding: const EdgeInsets.only(top: 8, bottom: 80),
+          itemCount: visibleOrders.length,
+          separatorBuilder: (c, i) => const SizedBox(height: 8),
+          itemBuilder: (_, i) => _OrderCard(order: visibleOrders[i]),
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) =>
+          Center(child: Text('Unable to load orders')),
     );
   }
 }
 
 class _OrderCard extends StatelessWidget {
-  final _OrderData order;
+  final MarketplaceOrder order;
   const _OrderCard({required this.order});
 
   @override
@@ -198,12 +204,26 @@ class _OrderCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text(order.shopName, style: AppTypography.labelLg.copyWith(color: AppColors.onBackground)),
+                    Text(
+                      order.product?.metadata.shopName ?? 'Blockchain VIP',
+                      style: AppTypography.labelLg.copyWith(
+                        color: AppColors.onBackground,
+                      ),
+                    ),
                     const SizedBox(width: 4),
-                    Icon(Icons.chevron_right, size: 10, color: AppColors.onSurfaceVariant),
+                    Icon(
+                      Icons.chevron_right,
+                      size: 10,
+                      color: AppColors.onSurfaceVariant,
+                    ),
                   ],
                 ),
-                Text(order.status, style: AppTypography.labelMd.copyWith(color: order.statusColor)),
+                Text(
+                  order.buyerStatusLabel,
+                  style: AppTypography.labelMd.copyWith(
+                    color: _statusColor(order.status),
+                  ),
+                ),
               ],
             ),
           ),
@@ -222,9 +242,10 @@ class _OrderCard extends StatelessWidget {
                   ),
                   clipBehavior: Clip.antiAlias,
                   child: Image.network(
-                    order.imageUrl,
+                    order.product?.imageUrl ?? '',
                     fit: BoxFit.cover,
-                    errorBuilder: (c, e, s) => Icon(Icons.image, color: AppColors.outline),
+                    errorBuilder: (c, e, s) =>
+                        Icon(Icons.image, color: AppColors.outline),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -239,20 +260,38 @@ class _OrderCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              order.productName,
-                              style: AppTypography.bodyMd.copyWith(color: AppColors.onBackground),
+                              order.product?.metadata.name ??
+                                  'Product #${order.productId}',
+                              style: AppTypography.bodyMd.copyWith(
+                                color: AppColors.onBackground,
+                              ),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(height: 4),
-                            Text(order.variant, style: AppTypography.bodySm.copyWith(color: AppColors.onSurfaceVariant)),
+                            Text(
+                              order.statusLabel,
+                              style: AppTypography.bodySm.copyWith(
+                                color: AppColors.onSurfaceVariant,
+                              ),
+                            ),
                           ],
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('x${order.quantity}', style: AppTypography.bodyMd.copyWith(color: AppColors.onSurfaceVariant)),
-                            Text(order.price, style: AppTypography.labelMd.copyWith(color: AppColors.onBackground)),
+                            Text(
+                              'x1',
+                              style: AppTypography.bodyMd.copyWith(
+                                color: AppColors.onSurfaceVariant,
+                              ),
+                            ),
+                            Text(
+                              order.amountLabel,
+                              style: AppTypography.labelMd.copyWith(
+                                color: AppColors.onBackground,
+                              ),
+                            ),
                           ],
                         ),
                       ],
@@ -270,46 +309,55 @@ class _OrderCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Text('Order Total: ', style: AppTypography.bodyMd.copyWith(color: AppColors.onBackground)),
-                    Text(order.total, style: AppTypography.titleLg.copyWith(color: AppColors.primary, fontWeight: FontWeight.w700)),
+                    Text(
+                      'Order Total: ',
+                      style: AppTypography.bodyMd.copyWith(
+                        color: AppColors.onBackground,
+                      ),
+                    ),
+                    Text(
+                      order.amountLabel,
+                      style: AppTypography.titleLg.copyWith(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    if (order.statusNote != null)
-                      Expanded(
-                        child: Text(order.statusNote!, style: AppTypography.bodySm.copyWith(color: AppColors.onSurfaceVariant)),
-                      )
-                    else
-                      const Spacer(),
+                    const Spacer(),
                     Row(
                       children: [
-                        if (order.secondaryAction != null)
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 17, vertical: 9),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: AppColors.outlineVariant),
-                            ),
-                            child: Text(order.secondaryAction!, style: AppTypography.labelMd.copyWith(color: AppColors.onBackground)),
-                          ),
-                        if (order.secondaryAction != null) const SizedBox(width: 8),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
                           decoration: BoxDecoration(
-                            color: order.primaryFilled ? AppColors.primary : null,
+                            color: order.status == 2 ? AppColors.primary : null,
                             borderRadius: BorderRadius.circular(8),
-                            border: order.primaryFilled ? null : Border.all(color: AppColors.primary),
-                            boxShadow: order.primaryFilled
-                                ? const [BoxShadow(color: Color(0x0D000000), blurRadius: 1, offset: Offset(0, 1))]
+                            border: order.status == 2
+                                ? null
+                                : Border.all(color: AppColors.primary),
+                            boxShadow: order.status == 2
+                                ? const [
+                                    BoxShadow(
+                                      color: Color(0x0D000000),
+                                      blurRadius: 1,
+                                      offset: Offset(0, 1),
+                                    ),
+                                  ]
                                 : null,
                           ),
                           child: Text(
-                            order.primaryAction,
+                            _primaryAction(order.status),
                             style: AppTypography.labelLg.copyWith(
-                              color: order.primaryFilled ? Colors.white : AppColors.primary,
+                              color: order.status == 2
+                                  ? Colors.white
+                                  : AppColors.primary,
                             ),
                           ),
                         ),
@@ -326,34 +374,20 @@ class _OrderCard extends StatelessWidget {
   }
 }
 
-class _OrderData {
-  final String shopName;
-  final String status;
-  final Color statusColor;
-  final String productName;
-  final String variant;
-  final int quantity;
-  final String price;
-  final String total;
-  final String imageUrl;
-  final String primaryAction;
-  final bool primaryFilled;
-  final String? secondaryAction;
-  final String? statusNote;
+Color _statusColor(int status) {
+  return switch (status) {
+    0 => AppColors.secondary,
+    1 => AppColors.onSurfaceVariant,
+    2 => AppColors.primary,
+    _ => AppColors.error,
+  };
+}
 
-  _OrderData({
-    required this.shopName,
-    required this.status,
-    required this.statusColor,
-    required this.productName,
-    required this.variant,
-    required this.quantity,
-    required this.price,
-    required this.total,
-    required this.imageUrl,
-    required this.primaryAction,
-    required this.primaryFilled,
-    this.secondaryAction,
-    this.statusNote,
-  });
+String _primaryAction(int status) {
+  return switch (status) {
+    0 => 'Contact Seller',
+    1 => 'Track Order',
+    2 => 'Rate',
+    _ => 'View Details',
+  };
 }
